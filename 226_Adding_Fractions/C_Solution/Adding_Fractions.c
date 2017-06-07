@@ -3,8 +3,13 @@
 #include <stdint.h>
 #include <string.h>
 #define MAX_FRACTIONS 20
+#define MAX_FRAC_STRING_SIZE 30
 
-char input[500] = "1/7,35/192,61/124,90/31,5/168,31/51,69/179,32/5,15/188,10/17";
+typedef struct fraction{
+    char fracString[MAX_FRAC_STRING_SIZE];
+    int64_t numerator;
+    int64_t denominator;
+}fraction_t;
 
 int64_t LowestCommonMultiple( int64_t n1, int64_t  n2)
 {
@@ -23,7 +28,6 @@ int64_t LowestCommonMultiple( int64_t n1, int64_t  n2)
     {
         if( minMultiple%n1==0 && minMultiple%n2==0 )
         {
-            //printf("The LCM of %d and %d is %d.", n1, n2,minMultiple);
             retVal = minMultiple;
             break;
         }
@@ -32,92 +36,60 @@ int64_t LowestCommonMultiple( int64_t n1, int64_t  n2)
     return retVal;
 }
 
-int64_t GreatestCommonFactor(int64_t n1, int64_t n2)
+//Euclidean Algorithm to find the Greatest Common Devisor via recursion
+int64_t GreatestCommonFactor(int64_t a, int64_t b)
 {
-    int64_t maxFactor, lowerBaseValue;  
-    int64_t retVal = 1;
-    maxFactor = (n1>n2) ? n1 : n2;
-    lowerBaseValue =  (n1>n2) ? n2 : n1;
+    // Everything divides 0 
+    if (a == 0 || b == 0)
+       return 0;
 
-    // Always true
-    while(0 < maxFactor)
-    {
-        if( n1%maxFactor==0 && n2%maxFactor==0 )
-        {
-            //printf("The LCM of %d and %d is %d.", n1, n2,minMultiple);
-            retVal = maxFactor;
-            break;
-        }
-        maxFactor -= lowerBaseValue;
-    }
-    return retVal;
-    
+    // base case
+    if (a == b)
+        return a;
+
+    // a is greater
+    if (a > b)
+        return GreatestCommonFactor(a-b, b);
+    return GreatestCommonFactor(a, b-a);
 }
 
 int main()
 {
-    char delim[2] = ",";
     char delim2[2] = "/";
     char * token = NULL;  
-    char * fractionArr[MAX_FRACTIONS] = {NULL};
+    fraction_t fractionArr[MAX_FRACTIONS] = {"", 0 , 0 };
+    int numFractions = 0;
     int i = 0;
-    int64_t numeratorArr[MAX_FRACTIONS] = {0};
-    int64_t denomArr[MAX_FRACTIONS] = {0};
-    
-    //populate the denominator arrary
-    //get first token
-    token = strtok( input, delim);
-    //loop through fractions
-    while(token != NULL)
+   
+    // Retrieve fractions from user
+    printf("Enter number of fractions to add:\n");
+    scanf("%i", &numFractions);
+    printf("Enter Fractions:\n");
+    for(i=0; i < numFractions; i++ )
     {
-        //add to the fraction array
-        fractionArr[i] = token; 
-        //get the next token
-        //printf("fractionArr index %i : %s\n", i, fractionArr[i] );
-        token = strtok( NULL, delim);
-        i++;
-
+        //populate the fraction info
+        scanf("%s", (fractionArr[i]).fracString);
+        (fractionArr[i]).numerator = atoi(strtok((fractionArr[i]).fracString, delim2));
+        (fractionArr[i]).denominator = atoi(strtok(NULL , delim2));
     }
-    i = 0;
-    //loop through fractions to populate numerator and denominator array
-    while(fractionArr[i] != NULL)
-    {
-       //capture Numerator
-       token = strtok(fractionArr[i], delim2);
-       numeratorArr[i] = atoi(token);
-       //capture Denominator
-       token = strtok( NULL, delim2);
-       denomArr[i] = (token == NULL) ? 1 : atoi(token);
 
-       //printf("numeratorArr index %i : %i\n", i, numeratorArr[i] );
-       //printf("denomArr index %i : %i\n", i, denomArr[i] );
-       i++;
-    }
-    
-
-    int64_t denomArrSize =  (sizeof(denomArr)/sizeof(denomArr[0]));
     int64_t gcf = 0;
     int64_t lcm = 1;
     int64_t numeratorTotal = 0;
 
     //loop throught to get the lowest common denominator
-    for(i=0; i<denomArrSize; i++)
+    for(i=0; i<numFractions; i++)
     {
-       lcm = LowestCommonMultiple(lcm, denomArr[i]);
-       // printf("index [%i] lcm = %lli\n", i, lcm);
+       lcm = LowestCommonMultiple(lcm,(fractionArr[i]).denominator);
     }
-    //printf("lcm = %i\n", lcm);
+    printf("lcm = %llu \n", lcm);
     
     //loop through and multiply numerators by lcm/denom. Add to total
-    for(i=0; i<denomArrSize; i++)
+    for(i=0; i<numFractions; i++)
     {
-      if(0 != denomArr[i])
-      {
-        numeratorArr[i] = numeratorArr[i] * (lcm/denomArr[i]);
-        numeratorTotal += numeratorArr[i];
-      }
+        (fractionArr[i]).numerator = (fractionArr[i]).numerator * (lcm/(fractionArr[i]).denominator);
+        numeratorTotal += (fractionArr[i]).numerator ;
     }
-    //printf("numeratorTotal = %lli\n", numeratorTotal);
     
     // reduce the fraction by repeatedly dividing by the greatest common factor
     while(1 != gcf )
