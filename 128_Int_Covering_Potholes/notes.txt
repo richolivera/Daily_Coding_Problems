@@ -1,0 +1,28 @@
+Notes: 128_Intermediate Covering Potholes.
+--------------------------------------------
+
+     This problem relies heavily on graph theory and it has taken me a 
+	 while to identify an algorithm which is relevant to this case:
+
+	 Algorithms researched:
+	 ----------------------
+	 Hopcroft-Karp - Used for finding the maximal matching of a bipartite graph
+	 
+	 Relevant concepts:
+	 ------------------
+	 Vertex Cover - The pothole problem is a minimal vertex cover problem of a
+	 biparate graph.
+
+	 Konig's theorem - In a biparate graph, the number of edges in maximum matching
+	 is equal to the number of vertices in minimum vertex cover.
+
+         Alogrithm used:
+         ---------------
+         The "Augmenting Path" Algorithm for bipartite graphs to find a maximum matching 
+         and a minimum vertex cover
+
+         The code is based on this video:
+         www.youtube.com/watch?v=C9c8zEZXboA
+
+
+
