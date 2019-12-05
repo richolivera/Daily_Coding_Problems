@@ -101,7 +101,6 @@ void addMsg(message_t ** msgArr, int msgId, int totalPkts, int * numMsgs )
 }
 
 // function: printAndRemoveMsg()
-// description: print and free message
 void printAndRemoveMsg(message_t ** msgArr, int msgId, int totalPkts, char * msgStr, int * numMsgs, int msgIndex)
 {
     int i = 0;
